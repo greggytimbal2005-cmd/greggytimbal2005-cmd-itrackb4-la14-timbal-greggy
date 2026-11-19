@@ -1,13 +1,6 @@
-# Lab Activity 13: Open the Front Door
-
-## J1: HomeController compared to a resource controller
-
-A resource controller's `index()` method usually reads from the database and passes a full list of records to a view, such as the movies list with search, filters, and pagination. It also sits behind a set of standard routes (create, store, show, edit, update, destroy) that Laravel generates automatically. My `HomeController` does neither: it only counts the movies and genres and returns the `home` view, and its single route is written by hand in `routes/web.php`.
-
-## J2: Pagination links before withQueryString()
-
-Before I added `withQueryString()`, the page links contained only the page number, such as `/movies?page=2`, so the search term and filters were dropped. When I clicked page 2, the controller received only the `page` value, so `$request->query('search')` returned nothing and the list showed every movie again. Adding `withQueryString()` made each link carry the existing search, genre, favorite, and sort values along with the page number.
-
-## J3: Why a misspelled sort value is worse than an error
-
-A misspelled sort value does not stop the page from loading, so nobody notices the sorting failed, and the list simply appears in no particular order. An error would at least tell me or a visitor that something is wrong, while this failure is silent. My allowed list, `['name', 'year']`, checks the sort value before it reaches `orderBy()`, and any value outside that list falls back to `name`.
+F1. authentication ay para sa security nung web ko, and yung authorization is para naman sa pag decide kung ano and ipeperform ng user sa pag signing in.
+F2. Kapag successful ang login, binibigyan ng regenerate() ng bagong session ID ang user. Kung hindi ito gagawin, puwedeng gamitin ng isang attacker ang lumang session ID na nakuha niya bago mag-login (session fixation), at makakapasok siya sa account nang hindi nalalaman ng user.
+F3. Ang message na “credentials do not match our records” ay hindi nagsasabi kung alin ang mali. Kung magkaiba ang message para sa maling password at sa walang account na email, puwedeng mag-test ang stranger ng iba’t ibang email para malaman kung sino ang may account sa movies database.
+F4. Ang create, store, edit, update, at destroy naman ay nagbabago ng data, kaya nilagyan ko sila ng auth middleware gamit ang middlewareFor sa web.php. Sa ganitong paraan, ang limang action lang ang nangangailangan ng sign-in.
+F5. kasi kahit nakatago parin yung button, pwede parin i search ni visitor sa address bar yung /movies/create o /movies/1/edit.
+F6. Kapag may guest na nag-try pumunta sa locked route, ire-redirect siya ng auth middleware sa route na may pangalang login. Kapag iba ang pangalan, hindi makita ng Laravel ang pupuntahan at lalabas ang error na “Route [login] not defined.” Ang pangalan ang nagdudugtong sa middleware at sa login page, kaya dapat eksakto ito.
